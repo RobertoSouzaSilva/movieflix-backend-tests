@@ -35,24 +35,24 @@ public class GenreResourceIT {
 
 	@Autowired
 	private GenreRepository genreRepository;
-	
+
 	@Autowired
 	private ObjectMapper objectMapper;
-	
+
 	@Value("${security.oauth2.client.client-id}")
 	private String clientId;
 
 	@Value("${security.oauth2.client.client-secret}")
-	private String clientSecret;	
-	
+	private String clientSecret;
+
 	private String visitorUsername;
 	private String visitorPassword;
 	private String memberUsername;
 	private String memberPassword;
-	
+
 	@BeforeEach
 	void setUp() throws Exception {
-		
+
 		visitorUsername = "bob@gmail.com";
 		visitorPassword = "123456";
 		memberUsername = "ana@gmail.com";
@@ -68,13 +68,13 @@ public class GenreResourceIT {
 
 		result.andExpect(status().isUnauthorized());
 	}
-	
+
 	@Test
 	public void findAllShouldReturnAllGenresWhenVisitorAuthenticated() throws Exception {
 
 		String accessToken = obtainAccessToken(visitorUsername, visitorPassword);
-		
-		long countGenres = genreRepository.count();		
+
+		long countGenres = genreRepository.count();
 
 		ResultActions result =
 				mockMvc.perform(get("/genres")
@@ -84,13 +84,13 @@ public class GenreResourceIT {
 		result.andExpect(status().isOk());
 		Assertions.assertEquals(countGenres, getGenres(result).length);
 	}
-	
+
 	@Test
 	public void findAllShouldReturnAllGenresWhenMemberAuthenticated() throws Exception {
 
 		String accessToken = obtainAccessToken(memberUsername, memberPassword);
 
-		long countGenres = genreRepository.count();		
+		long countGenres = genreRepository.count();
 
 		ResultActions result =
 				mockMvc.perform(get("/genres")
@@ -105,7 +105,7 @@ public class GenreResourceIT {
 		String json = result.andReturn().getResponse().getContentAsString();
 		return objectMapper.readValue(json, GenreDTO[].class);
 	}
-	
+
 	private String obtainAccessToken(String username, String password) throws Exception {
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -123,5 +123,5 @@ public class GenreResourceIT {
 
 		JacksonJsonParser jsonParser = new JacksonJsonParser();
 		return jsonParser.parseMap(resultString).get("access_token").toString();
-	}	
+	}
 }
